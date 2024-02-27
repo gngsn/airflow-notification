@@ -3,7 +3,9 @@ from airflow.decorators import dag, task
 
 
 @task.virtualenv(
-    task_id="virtualenv_python", requirements=["colorama==0.4.0"], system_site_packages=False
+    task_id="virtualenv_python",
+    requirements=["colorama==0.4.0"],
+    system_site_packages=False
 )
 def callable_virtualenv():
     from time import sleep
@@ -31,8 +33,6 @@ def test_print_color_log_dag():
 
 
 trigger_dag = test_print_color_log_dag()
-
-print("done!")
 
 if __name__ == "__main__":
     trigger_dag.test()
