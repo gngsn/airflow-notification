@@ -1,14 +1,12 @@
 import pendulum
-
 from airflow.decorators import dag, task
+from croniter import croniter
+from sqlalchemy import Engine
 
-TEMPLATE_ID = "template_id"
-TEMPLATE_KEY_SCHEDULE = "schedule"
-TEMPLATE_KEY_CHECKSUM = "checksum"
-TEMPLATE_KEY_ARGS = "argument"
-
-MESSAGE_TITLE = "title"
-MESSAGE_CONTENT = "content"
+from src.domain.const import *
+from src.domain.message.schema import SCHEMAS
+from src.domain.message.template import TEMPLATES
+from src.model.database.base import transactional
 
 
 @dag(
@@ -19,6 +17,18 @@ MESSAGE_CONTENT = "content"
 def trigger():
     @task
     def generator():
+        def match(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
+            return croniter.match(schedule, now)
+
+        connect = Engine.connect()
+
+        for s in SCHEMAS:
+            if match(s.schedule):
+                _templates = filter(lambda t: t.id == s.id, TEMPLATES[s])
+
+                for template in _templates:
+                    get_targets(connect, template)
+
         return {
             TEMPLATE_ID: "UMSV10001",
             TEMPLATE_KEY_SCHEDULE: "*/30 9-18 * * MON,TUE,WED,THU,FRI",
@@ -26,7 +36,14 @@ def trigger():
             TEMPLATE_KEY_CHECKSUM: "task_count",
         }
 
-    # virtualenv
+    @transactional
+    def get_targets(connect, template):
+        with connect:
+            rs = connect.execute(template.target)
+
+            for row in rs:
+                print(row)
+
     @task
     def send(schema: dict):
         messages = [

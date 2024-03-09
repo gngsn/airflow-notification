@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, PositiveInt
 
 
-class User(BaseModel):
+class UserTest(BaseModel):
     id: int
     name: str = "John Doe"
     signup_at: datetime | None
