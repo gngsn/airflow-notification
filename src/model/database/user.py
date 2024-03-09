@@ -1,22 +1,15 @@
-from sqlalchemy import Column, String, Integer, Sequence
-from sqlalchemy.sql.ddl import CreateSequence
+from peewee import CharField, AutoField, DateTimeField
+from pendulum import datetime, now
 
-from src.model.database.base import Base
+from src.model.database.base import BaseModel
 
 
-class User(Base):
+class User(BaseModel):
     """ User DB Model """
-    __tablename__ = "users"
 
-    id: int = Column(Integer, Sequence('users_id_seq'), primary_key=True, autoincrement=True)
-    name: str = Column(String)
+    class Meta:
+        table_name = 'users'
 
-
-if __name__ == '__main__':
-    from sqlalchemy.schema import CreateTable
-    from sqlalchemy.dialects import postgresql
-
-    ddl_users = CreateTable(User.__table__).compile(dialect=postgresql.dialect())
-    ddl_users_seq = CreateSequence(User.__table__)
-    print(ddl_users)
-    print(ddl_users_seq)
+    id: int = AutoField()
+    name: str = CharField(max_length=100)
+    updated_at: datetime = DateTimeField(default=now())

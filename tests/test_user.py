@@ -1,9 +1,8 @@
 from unittest import TestCase
 
 import pendulum
-from sqlalchemy import select
 
-from src.model.database.base import transactional
+from src.model.database.base import init_db
 from src.model.database.meeting import Meeting
 from src.model.database.user import User
 
@@ -11,31 +10,27 @@ from src.model.database.user import User
 class TestUser(TestCase):
 
     def test_session(self):
-        def new_user(db_session):
-            db_session.add(User(name="test_2"))
+        def new_user():
+            u = User.create(name="test_2")
+            print('new user id : ', u)
 
         def error():
             raise ValueError("냠")
 
-        def new_meeting(db_session):
-            db_session.add(
-                Meeting(
-                    owner="test_1",
-                    room="F11R01",
-                    start_time=pendulum.now(),
-                    end_time=pendulum.now()
-                ))
+        def new_meeting():
+            m = Meeting.create(
+                owner="test_2",
+                room="F11R01",
+                start_time=pendulum.now(),
+                end_time=pendulum.now()
+            )
 
-        def select_user(db_session, id=1):
-            stmt = select(User).where(User.id == id)
-            print('result111 : ', db_session.execute(stmt).first())
+            print('new meeting id : ', m)
 
-        @transactional
-        def exec(db_session):
-            new_user(db_session)
-            select_user(db_session, 2)
+        def exec():
+            new_user()
+            error()
+            new_meeting()
 
-            new_meeting(db_session)
-            select_user(db_session, 2)
-
+        init_db()
         exec()

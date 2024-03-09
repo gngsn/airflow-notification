@@ -1,36 +1,54 @@
-import contextvars
+__all__ = ['init_db', 'BaseModel', 'transactional']
+
+import logging
 from functools import wraps
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from peewee import Model, PeeweeException, PostgresqlDatabase, Proxy
 
-Base = declarative_base()
+_database = Proxy()
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost/postgres"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=10)
-session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-db_session_context = contextvars.ContextVar("db_session", default=None)
+def init_db(url="postgresql://postgres:postgres@localhost/postgres"):
+    """ Lazy Initialize Database Connection """
+    _database.initialize(PostgresqlDatabase(url))
+
+
+class BaseModel(Model):
+    class Meta:
+        database = _database
 
 
 def transactional(func):
+    """ transactional decorator.
+        use transaction by annotating @transactional decorator to method
+    """
+
     @wraps(func)
     def wrap_func(*args, **kwargs):
-        db_session = db_session_context.get()
-        if db_session:
-            return func(*args, **kwargs, db_session=db_session)
-        db_session = session()
-        db_session_context.set(db_session)
-        try:
-            result = func(*args, **kwargs, db_session=db_session)
-            db_session.commit()
-        except Exception as e:
-            db_session.rollback()
-            raise
-        finally:
-            db_session.close()
-            db_session_context.set(None)
-        return result
+
+        with _database.atomic() as transaction:
+            try:
+                return func(*args, **kwargs)
+            except PeeweeException as pe:
+                logging.error(pe)
+                transaction.rollback()
+
+    return wrap_func
+
+
+def tx_db(func):
+    """ transactional decorator.
+        use transaction by annotating @transactional decorator to method
+    """
+
+    @wraps(func)
+    def wrap_func(*args, **kwargs):
+
+        with _database.atomic() as transaction:
+            try:
+                return func(db=_database, *args, **kwargs)
+            except PeeweeException as pe:
+                logging.error(pe)
+                transaction.rollback()
 
     return wrap_func

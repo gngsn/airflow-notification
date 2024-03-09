@@ -1,23 +1,19 @@
-from sqlalchemy import Column, String, text, DateTime, Integer
+from peewee import DateTimeField, CharField, IntegerField
+from pendulum import datetime, now
 
-from src.model.database.base import Base
+from src.model.database.base import BaseModel
 
 
-class Meeting(Base):
+class Meeting(BaseModel):
     """ Meeting DB Model """
-    __tablename__ = "meeting"
 
-    id: int = Column(Integer, primary_key=True)
-    room: str = Column(String)
-    owner: str = Column(String)
-    start_time: DateTime = Column(DateTime, server_default=text('NOW()'))
-    end_time: DateTime = Column(DateTime, server_default=text('NOW()'))
+    class Meta:
+        table_name = 'meeting'
+
+    id: int = IntegerField(primary_key=True)
+    room: str = CharField()
+    owner: str = CharField()
+    start_time: datetime = DateTimeField(default=now())
+    end_time: datetime = DateTimeField(default=now())
+    updated_at: datetime = DateTimeField(default=now())
     # participants: str # TODO
-
-
-if __name__ == '__main__':
-    from sqlalchemy.schema import CreateTable
-    from sqlalchemy.dialects import postgresql
-
-    ddl_meeting = CreateTable(Meeting.__table__).compile(dialect=postgresql.dialect())
-    print(ddl_meeting)
