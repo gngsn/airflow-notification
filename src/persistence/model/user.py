@@ -1,7 +1,7 @@
 from peewee import CharField, AutoField, DateTimeField
 from pendulum import datetime, now
 
-from src.model.database.base import BaseModel
+from src.persistence.base.connection import BaseModel
 
 
 class User(BaseModel):

@@ -1,21 +1,11 @@
-__all__ = ['init_db', 'BaseModel', 'transactional']
+__all__ = ['transactional', 'tx_db']
 
 import logging
 from functools import wraps
 
-from peewee import Model, PeeweeException, PostgresqlDatabase, Proxy
+from peewee import PeeweeException
 
-_database = Proxy()
-
-
-def init_db(url="postgresql://postgres:postgres@localhost/postgres"):
-    """ Lazy Initialize Database Connection """
-    _database.initialize(PostgresqlDatabase(url))
-
-
-class BaseModel(Model):
-    class Meta:
-        database = _database
+from src.persistence.base import database_
 
 
 def transactional(func):
@@ -26,7 +16,7 @@ def transactional(func):
     @wraps(func)
     def wrap_func(*args, **kwargs):
 
-        with _database.atomic() as transaction:
+        with database_.atomic() as transaction:
             try:
                 return func(*args, **kwargs)
             except PeeweeException as pe:
@@ -44,9 +34,9 @@ def tx_db(func):
     @wraps(func)
     def wrap_func(*args, **kwargs):
 
-        with _database.atomic() as transaction:
+        with database_.atomic() as transaction:
             try:
-                return func(db=_database, *args, **kwargs)
+                return func(database=database_, *args, **kwargs)
             except PeeweeException as pe:
                 logging.error(pe)
                 transaction.rollback()

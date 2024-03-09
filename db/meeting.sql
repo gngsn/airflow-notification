@@ -11,3 +11,6 @@ CREATE TABLE meeting
 alter table meeting
     add updated_at timestamp;
 
+alter table meeting
+    add name varchar(255);
+

@@ -7,14 +7,13 @@ class MessagesTemplate(BaseModel):
     id: str
     title: str
     message: str
-    target: str
 
 
 TEMPLATES = [
     MessagesTemplate(
         id="UMSV10001",
         title="이번 주 회의 건 수",
-        message="이번 주 {{task_count}}개의 회의가 예정되어 있어요.",
+        message="이번 주 $meeting_name 회의가 예정되어 있어요. $remaining 시간 남았어요.",
     ),
     MessagesTemplate(
         id="UMSV10002",
