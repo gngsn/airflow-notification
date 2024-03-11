@@ -46,7 +46,7 @@ SCHEMAS = [
 from string import Template
 
 if __name__ == "__main__":
-    from src.persistence.base import init_db, execute
+    from src.persistence.base import init_pg, execute
 
 
     def get_targets(template):
@@ -61,7 +61,7 @@ if __name__ == "__main__":
             yield {column[0]: value for column, value in zip(cursor.description, row)}
 
 
-    init_db()
+    init_pg()
 
     _templates = MessagesTemplate(
         id="UMSV10001",

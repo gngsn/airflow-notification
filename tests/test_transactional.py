@@ -2,12 +2,12 @@ from unittest import TestCase
 
 import pendulum
 
-from src.persistence.base import init_db
+from src.persistence.base import transactional, init_sqlite
 from src.persistence.model.meeting import Meeting
 from src.persistence.model.user import User
 
 
-class TestUser(TestCase):
+class TestTransactional(TestCase):
 
     def test_session(self):
         def new_user():
@@ -28,10 +28,11 @@ class TestUser(TestCase):
 
             print('new meeting id : ', m)
 
+        @transactional
         def exec():
             new_user()
             # error()
             new_meeting()
 
-        init_db()
+        init_sqlite()
         exec()

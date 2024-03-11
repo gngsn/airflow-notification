@@ -5,7 +5,7 @@ from functools import wraps
 
 from peewee import PeeweeException
 
-from src.persistence.base import database_
+from src.persistence.base.connection import database_
 
 
 def transactional(func):
