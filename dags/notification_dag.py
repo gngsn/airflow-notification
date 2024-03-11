@@ -26,8 +26,8 @@ def trigger():
 
         import pendulum
 
-        from src.domain.message import SCHEMAS, TEMPLATES, MessagesTemplate, MessageSchema
-        from src.persistence.base import init_db
+        from src.domain.message import SCHEMAS, TEMPLATES, MessageSchema
+        from src.persistence.base import init_pg
         from src.persistence.base import execute, transactional
 
         def to_json(cursor):
@@ -43,14 +43,20 @@ def trigger():
         def match(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
             return croniter.match(schedule, now)
 
-        messages = []
-        init_db()
+        def replace(_templates, target):
+            return Template(_templates.message).substitute(**target)
 
+        init_pg()
+
+        messages = []
         for s in SCHEMAS:
             if match(s.schedule):
-                for target in get_targets(s):
-                    _templates: MessagesTemplate = next(filter(lambda t: t.id == s.id, TEMPLATES))
-                    substitute = Template(_templates.message).substitute(**target)
+                """ Messages scheduled now """
+                for args in get_targets(s):
+                    matched_messages_iter = filter(lambda t: t.id == s.id, TEMPLATES)
+                    message_templates = next(matched_messages_iter)
+                    substitute = replace(message_templates, args)
+
                     messages.append(substitute)
 
         return messages
