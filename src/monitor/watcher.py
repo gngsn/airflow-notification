@@ -1,10 +1,10 @@
-import logging
 import uuid
-from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Callable
 
 import pendulum
+
+from src.monitor.logger import Logger
 
 
 class BatchExecutionStatus(Enum):
@@ -14,56 +14,9 @@ class BatchExecutionStatus(Enum):
     ERROR: str = 'error'
 
 
-tx_context = dict()
-
-
-class Writer(ABC):
-    @abstractmethod
-    def start(self, context):
-        pass
-
-    @abstractmethod
-    def end(self, context):
-        pass
-
-
-class WriterOff(Writer):
-
-    def start(self, context):
-        pass
-
-    def end(self, context):
-        pass
-
-
-class WriterOn(Writer):
-
-    def start(self, context):
-        logging.info(f"start {context['name']}: tx_id: {context['tx_id']}")
-
-    def end(self, context):
-        logging.info(f"start {context['name']}: tx_id: {context['tx_id']}")
-
-
-class Logger:
-    pid: bool
-    logger: Writer
-
-    def __init__(self, pid: uuid, on: bool = True):
-        self.pid = pid
-        self.logger = WriterOn() if on else WriterOff()
-
-    def start(self, context):
-        self.logger.start(context)
-
-    def end(self, context):
-        self.logger.end(context)
-
-
 class Watcher:
     """
         Python method 모니터링
-        Airflow
     """
     _uuid: uuid
     _logger: Logger
