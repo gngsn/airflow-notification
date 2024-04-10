@@ -1,4 +1,4 @@
-__all__ = ['init_pg', 'init_sqlite', 'database_', 'execute']
+__all__ = ['init_pg', 'init_sqlite', 'database_', 'execute', 'BaseModel']
 
 from peewee import PostgresqlDatabase, Proxy, Model, Database, SqliteDatabase
 
@@ -10,7 +10,7 @@ def init_db(initializer: callable, db: Database):
     initializer(db)
 
 
-def init_pg(url="postgresql://postgres:postgres@localhost/postgres") -> None:
+def init_pg(url="postgresql://postgres:postgres@localhost/ums") -> None:
     """Initialize PostgreSQL database."""
     init_db(database_.initialize, PostgresqlDatabase(url))
 
