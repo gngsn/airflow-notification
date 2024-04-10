@@ -1,4 +1,4 @@
-from peewee import DateTimeField, CharField, IntegerField
+from peewee import DateTimeField, CharField, IntegerField, TimestampField
 from pendulum import datetime, now
 
 from src.persistence.base.connection import BaseModel
@@ -13,7 +13,9 @@ class Meeting(BaseModel):
     id: int = IntegerField(primary_key=True)
     name: str = CharField(max_length=255)
     room: str = CharField(max_length=31)
-    owner: str = CharField(max_length=255)  # TODO: Normalization
+
+    host: str = CharField(max_length=255)
     start_time: datetime = DateTimeField(default=now())
     end_time: datetime = DateTimeField(default=now())
-    updated_at: datetime = DateTimeField(default=now())
+
+    updated_at: datetime = TimestampField(default=now())

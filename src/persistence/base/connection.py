@@ -16,7 +16,7 @@ def init_pg(url="postgresql://postgres:postgres@localhost/ums") -> None:
 
 
 def init_sqlite(url=":memory:") -> None:
-    """Initialize PostgreSQL database."""
+    """Initialize Sqlite database."""
     init_db(database_.initialize, SqliteDatabase(url))
 
 
