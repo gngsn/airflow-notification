@@ -20,46 +20,10 @@ def trigger():
             "psycopg2-binary",
         ],
     )
-    def generator():
-        from croniter import croniter
-        from string import Template
+    def generate():
+        from src.domain.message import generator
 
-        import pendulum
-
-        from src.domain.message import SCHEMAS, TEMPLATES, MessageSchema
-        from src.persistence.base import init_pg
-        from src.persistence.base import execute, transactional
-
-        def to_json(cursor):
-            for row in cursor.fetchall():
-                yield {column[0]: value for column, value in zip(cursor.description, row)}
-
-        @transactional
-        def get_targets(schema: MessageSchema) -> list[dict]:
-            cursor = execute(schema.target)
-            table = list(to_json(cursor))
-            return table
-
-        def match(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
-            return croniter.match(schedule, now)
-
-        def replace(_templates, target):
-            return Template(_templates.message).substitute(**target)
-
-        init_pg()
-
-        messages = []
-        for s in SCHEMAS:
-            if match(s.schedule):
-                """ Messages scheduled now """
-                for args in get_targets(s):
-                    matched_messages_iter = filter(lambda t: t.id == s.id, TEMPLATES)
-                    message_templates = next(matched_messages_iter)
-                    substitute = replace(message_templates, args)
-
-                    messages.append(substitute)
-
-        return messages
+        return generator.run()
 
     @task
     def send(schema: list[str]):
@@ -68,8 +32,8 @@ def trigger():
 
         return schema
 
-    schema = generator()
-    send(schema)
+    messages = generate()
+    send(messages)
 
 
 trigger_dag = trigger()
