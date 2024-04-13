@@ -1,7 +1,7 @@
 from peewee import CharField, AutoField
 
 from src.persistence.base.connection import BaseModel
-from src.persistence.model.template import MessageTemplate
+from src.persistence.entity.template import MessageTemplate
 
 
 class MessageSchema(BaseModel):

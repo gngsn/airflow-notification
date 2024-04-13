@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.domain.message.message import Message
+from src.model.message.message import Message
 
 
 class Queue(ABC):

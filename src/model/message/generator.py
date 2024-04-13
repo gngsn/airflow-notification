@@ -2,12 +2,12 @@ from typing import Generator
 
 import pendulum
 
-from src.domain.message.message import Message
-from src.domain.message_queue import MessageQueue
+from src.model.message.message import Message
+from src.model.message_queue import MessageQueue
 from src.persistence.base import execute, transactional
 from src.persistence.base import init_pg
-from src.persistence.model.schema import MessageSchema
-from src.persistence.model.template import MessageTemplate
+from src.persistence.entity.schema import MessageSchema
+from src.persistence.entity.template import MessageTemplate
 
 
 def _init():
@@ -21,17 +21,19 @@ def run(setup=_init):
     for s in MessageSchema.select_all():
         template = _match_one(message_templates, s.template_id)
 
-        if _trigger_now(s.schedule) and template:
-            """ Messages scheduled now """
-            for args in _get_targets(s):
-                substitute = _replace(template.message, args)
-                MessageQueue.append(
-                    Message(
-                        title=template.title,
-                        body=substitute,
-                        to=args['target']
-                    )
+        if not _trigger_now(s.schedule) or not template:
+            continue
+
+        """ Messages scheduled now """
+        for args in _get_targets(s):
+            substitute = _replace(template.message, args)
+            MessageQueue.append(
+                Message(
+                    title=template.title,
+                    body=substitute,
+                    to=args['target']
                 )
+            )
 
 
 @transactional

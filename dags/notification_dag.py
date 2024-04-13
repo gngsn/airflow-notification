@@ -21,9 +21,9 @@ def trigger():
         ],
     )
     def run():
-        from src.domain.message import generator
-        from src.domain.message import sender
-        from src.domain.message_queue import MessageQueue
+        from src.model.message import generator
+        from src.model.message import sender
+        from src.model.message_queue import MessageQueue
 
         MessageQueue()
 

@@ -1,7 +1,7 @@
 from src.persistence.base import init_pg
 from src.persistence.base.connection import database_
-from src.persistence.model.schema import MessageSchema
-from src.persistence.model.template import MessageTemplate
+from src.persistence.entity.schema import MessageSchema
+from src.persistence.entity.template import MessageTemplate
 
 init_pg()
 

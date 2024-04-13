@@ -1,5 +1,5 @@
-from src.domain.message.message import Message
-from src.domain.queue import Queue
+from src.model.message.message import Message
+from src.model.queue import Queue
 
 __all__ = ["MessageQueue"]
 
@@ -31,7 +31,7 @@ class MessageQueue(Queue):
         return cls._instance
 
     def __dict__(self):
-        return self._instance
+        return self._instance.__dict__()
 
     @classmethod
     def append(cls, message: Message):
