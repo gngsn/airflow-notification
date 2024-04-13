@@ -4,7 +4,7 @@ from pendulum import datetime
 
 @dag(
     start_date=datetime(2021, 1, 1),
-    schedule_interval="*/30 * * * *",
+    schedule="*/30 * * * *",
     catchup=False,
 )
 def trigger():
@@ -20,20 +20,17 @@ def trigger():
             "psycopg2-binary",
         ],
     )
-    def generate():
+    def run():
         from src.domain.message import generator
+        from src.domain.message import sender
+        from src.domain.message_queue import MessageQueue
 
-        return generator.run()
+        MessageQueue()
 
-    @task
-    def send(schema: list[str]):
-        if schema is None:
-            return "Error"
+        generator.run()
+        sender.run()
 
-        return schema
-
-    messages = generate()
-    send(messages)
+    run()
 
 
 trigger_dag = trigger()
