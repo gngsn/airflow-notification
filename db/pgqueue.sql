@@ -11,16 +11,3 @@ CREATE TABLE base_queue
     update_time timestamp,
     priority    integer   DEFAULT 0                 NOT NULL
 );
-
-CREATE TABLE ums_queue
-(
-) INHERITS (base_queue);
-
--- insert into ums_queue(params) values (<YOUR BUSINESS PAYLOAD JSON>)
--- and priority = <REQUIRED PROIRITY>
---   and try_count <= max_tries;
-
-
--- select * from <YOUR QUEUE NAME> where status = 0
--- limit 1
--- for update skip locked;
