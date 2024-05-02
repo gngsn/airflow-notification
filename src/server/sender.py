@@ -1,33 +1,15 @@
-from pq import PQ
-from procrastinate import PsycopgConnector, App
-# Make an app in your code
-# app = App(connector=SyncPsycopgConnector())
-from psycopg2 import connect
+import procrastinate
 
-# dbh = init_pg()
-
-conn = connect('dbname=example user=postgres')
-pq = PQ(conn)
-
-pq.create()
-
-queue = pq['default']
+app = procrastinate.App(connector=procrastinate.SyncPsycopgConnector())
 
 
-@queue.task(schedule_at='1h')
-def eat(job_id, kind):
-    print('umm, %s apples taste good.' % kind)
+@app.task(queue="sums")
+def sum(a, b):
+    with open("myfile", "w") as f:
+        f.write(str(a + b))
 
 
-eat('Cox')
-queue.work()
+with app.open():
+    sum.defer(a=3, b=5)
 
-app = App(
-    connector=PsycopgConnector(
-        kwargs={
-            "host": "localhost:5434",
-            "user": "postgres",
-            "password": "postgres",
-        }
-    )
-)
+app.run_worker(queues=["sums"])
