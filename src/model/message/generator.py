@@ -1,13 +1,15 @@
+from string import Template
 from typing import Generator
 
 import pendulum
+from croniter import croniter
 
 from src.model.message.message import Message
-from src.model.message_queue import MessageQueue
 from src.persistence.base import execute, transactional
 from src.persistence.base import init_pg
 from src.persistence.entity.schema import MessageSchema
 from src.persistence.entity.template import MessageTemplate
+from src.persistence.queue.notification_queue import NotificationQueue
 
 
 def _init():
@@ -22,18 +24,22 @@ def run(setup=_init):
         template = _match_one(message_templates, s.template_id)
 
         if not _trigger_now(s.schedule) or not template:
+            """ The notification is not scheduled now """
             continue
 
-        """ Messages scheduled now """
         for args in _get_targets(s):
             substitute = _replace(template.message, args)
-            MessageQueue.append(
-                Message(
-                    title=template.title,
-                    body=substitute,
-                    to=args['target']
-                )
-            )
+
+            target_id = args["target"]
+            message = Message(title=template.title, body=substitute, to=target_id)
+            notification_checksums = [args[key] for key in s.checksum_keys.split(",")]
+
+            queue_checksum = _make_checksum(s.template_id, target_id, notification_checksums)
+            NotificationQueue.enqueue(queue_checksum, message.__dict__())
+
+
+def _make_checksum(template_id: str, target: str, checksums: list[str]):
+    return ":".join([template_id, target, checksums])
 
 
 @transactional
@@ -50,13 +56,10 @@ def _get_targets(schema: MessageSchema) -> Generator:
 
 
 def _trigger_now(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
-    from croniter import croniter
     return croniter.match(schedule, now)
 
 
 def _replace(template, target):
-    from string import Template
-
     return Template(template).substitute(**target)
 
 
