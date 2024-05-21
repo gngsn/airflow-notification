@@ -15,7 +15,7 @@ class MessageSchema(BaseModel):
     schedule: str = CharField(max_length=255)
     args: str = CharField(max_length=255)
     target: str = CharField(max_length=255)
-    checksum: str = CharField(max_length=255)
+    checksum_keys: str = CharField(max_length=255)
 
     @classmethod
     def select_all(cls):

@@ -1,3 +1,5 @@
+import json
+
 from src.persistence.queue.base_queue import BaseQueue
 
 
@@ -8,8 +10,8 @@ class NotificationQueue(BaseQueue):
         table_name = 'notification_queue'
 
     @classmethod
-    def insert_notification(cls, notification):
+    def enqueue(cls, queue_checksum: str, message: dict):
         cls.insert(
-            notification.id,
-
+            checksum=queue_checksum,
+            playload=json.dumps(message)
         )
