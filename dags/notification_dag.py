@@ -23,9 +23,7 @@ def trigger():
     )
     def run():
         from src.model.message import generator
-        from src.model.message_queue import MessageQueue
 
-        MessageQueue()
         generator.run()
 
     @task.virtualenv(
