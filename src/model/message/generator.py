@@ -1,9 +1,10 @@
-from string import Template
 from typing import Generator
 
 import pendulum
 from croniter import croniter
 
+from src.lib.list import match_one
+from src.lib.template import replace
 from src.model.message.message import Message
 from src.persistence.base import execute, transactional
 from src.persistence.base import init_pg
@@ -21,14 +22,14 @@ def run(setup=_init):
     message_templates = MessageTemplate.find_all()
 
     for s in MessageSchema.select_all():
-        template = _match_one(message_templates, s.template_id)
+        template = match_one(message_templates, s.template_id)
 
         if not _trigger_now(s.schedule) or not template:
             """ The notification is not scheduled now """
             continue
 
         for args in _get_targets(s):
-            substitute = _replace(template.message, args)
+            substitute = replace(template.message, args)
 
             target_id = args["target"]
             message = Message(title=template.title, body=substitute, to=target_id)
@@ -57,12 +58,3 @@ def _get_targets(schema: MessageSchema) -> Generator:
 
 def _trigger_now(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
     return croniter.match(schedule, now)
-
-
-def _replace(template, target):
-    return Template(template).substitute(**target)
-
-
-def _match_one(list, key):
-    it = [l for l in list if l.id == key]
-    return it.pop() if len(it) != 0 else None
