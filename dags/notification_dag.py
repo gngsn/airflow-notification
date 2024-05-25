@@ -10,7 +10,28 @@ from pendulum import datetime
 )
 def trigger():
     @task.virtualenv(
-        task_id="generator",
+        task_id="preset_db",
+        system_site_packages=False,
+        python_version='3.11',
+        requirements=[
+            "peewee==3.17.0",
+            "pendulum==2.1.2",
+            "psycopg2-binary",
+        ],
+    )
+    def preset_db():
+        from pendulum import now
+        from src.persistence.queue import create_partition_if_not_exists
+
+        from src.persistence import init_pg
+
+        init_pg()
+
+        now_date = now().date()
+        create_partition_if_not_exists(now_date)
+
+    @task.virtualenv(
+        task_id="generate",
         system_site_packages=False,
         python_version='3.11',
         requirements=[
@@ -22,21 +43,12 @@ def trigger():
         ],
     )
     def generate():
-        from pendulum import now
-        from src.persistence.queue import create_partition_if_not_exists
-
-        from src.persistence import init_pg
-
-        init_pg()
-        now_date = now().date()
-        create_partition_if_not_exists(now_date)
-
         from src.model.message import generator
 
         generator.run()
 
     @task.virtualenv(
-        task_id="generator",
+        task_id="send",
         system_site_packages=False,
         python_version='3.11',
         requirements=[
@@ -53,6 +65,7 @@ def trigger():
         init_pg()
         sender.run()
 
+    preset_db()
     generate()
     send()
 
