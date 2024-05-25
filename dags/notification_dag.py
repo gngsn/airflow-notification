@@ -21,7 +21,16 @@ def trigger():
             "psycopg2-binary",
         ],
     )
-    def run():
+    def generate():
+        from pendulum import now
+        from src.persistence.queue import create_partition_if_not_exists
+
+        from src.persistence import init_pg
+
+        init_pg()
+        now_date = now().date()
+        create_partition_if_not_exists(now_date)
+
         from src.model.message import generator
 
         generator.run()
@@ -37,12 +46,15 @@ def trigger():
             "psycopg2-binary",
         ],
     )
-    def run():
+    def send():
         from src.model.message import sender
+        from src.persistence import init_pg
 
+        init_pg()
         sender.run()
 
-    run()
+    generate()
+    send()
 
 
 trigger_dag = trigger()

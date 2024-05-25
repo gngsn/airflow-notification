@@ -1,8 +1,11 @@
 __all__ = ['init_pg', 'init_sqlite', 'database_', 'execute', 'BaseModel']
 
-from peewee import PostgresqlDatabase, Proxy, Model, Database, SqliteDatabase
+from peewee import PostgresqlDatabase, Model, Database, SqliteDatabase, Proxy
 
 database_ = Proxy()
+
+
+# PostgresqlDatabase("postgresql://postgres:postgres@localhost/ums"))
 
 
 def init_db(initializer: callable, db: Database):

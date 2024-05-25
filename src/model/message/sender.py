@@ -1,4 +1,9 @@
+from src.persistence.queue import NotificationQueue
+
+
 def run():
-    from src.model.message.generator import MessageQueue
-    while MessageQueue.has_next():
-        print("Message: ", MessageQueue.pop())
+    dequeue = NotificationQueue.dequeue()
+
+    print(dequeue)
+    for message in dequeue:
+        print(message)

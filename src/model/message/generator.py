@@ -7,14 +7,14 @@ from src.lib.list import match_one
 from src.lib.template import replace
 from src.model.message.message import Message
 from src.persistence.base import execute, transactional
-from src.persistence.base import init_pg
 from src.persistence.entity.schema import MessageSchema
 from src.persistence.entity.template import MessageTemplate
 from src.persistence.queue.notification_queue import NotificationQueue
 
 
 def _init():
-    init_pg()
+    # init_pg()
+    pass
 
 
 def run(setup=_init):
