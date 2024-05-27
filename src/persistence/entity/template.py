@@ -1,6 +1,6 @@
 from peewee import CharField
 
-from src.persistence.base.connection import BaseModel
+from src.persistence.base.connection import BaseModel, database_, init_pg
 
 
 class MessageTemplate(BaseModel):
@@ -16,3 +16,8 @@ class MessageTemplate(BaseModel):
     @classmethod
     def find_all(cls):
         return cls.select()
+
+
+if __name__ == "__main__":
+    init_pg()
+    database_.create_tables([MessageTemplate])
