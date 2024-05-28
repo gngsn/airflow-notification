@@ -19,16 +19,15 @@ def trigger():
             "psycopg2-binary",
         ],
     )
-    def preset_db():
+    def pre_setup():
         from pendulum import now
-        from src.persistence.queue import create_partition_if_not_exists
-
         from src.persistence import init_pg
+        from src.persistence.queue import NotificationQueue
 
         init_pg()
 
         now_date = now().date()
-        create_partition_if_not_exists(now_date)
+        NotificationQueue.create_partition_if_not_exists(now_date)
 
     @task.virtualenv(
         task_id="generate",
@@ -65,7 +64,7 @@ def trigger():
         init_pg()
         sender.run()
 
-    preset_db()
+    pre_setup()
     generate()
     send()
 
