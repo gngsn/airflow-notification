@@ -30,9 +30,7 @@ if __name__ == "__main__":
 
     def get_targets(template):
         cursor = execute(template.target)
-        table = list(to_json(cursor))
-        print(table)
-        return table
+        return list(to_json(cursor))
 
 
     def to_json(cursor):
