@@ -5,8 +5,7 @@ from src.persistence.queue import NotificationQueue
 
 def run():
     chunk = 10
-    dequeue = NotificationQueue.dequeue()
-
+    dequeue = NotificationQueue.dequeue(chunk)
     senders = [ConsoleSender()]
 
     print(dequeue)
