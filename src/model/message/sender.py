@@ -8,7 +8,6 @@ def run():
     dequeue = NotificationQueue.dequeue(chunk)
     senders = [ConsoleSender()]
 
-    print(dequeue)
     for message in dequeue:
         for sender in senders:
             code = sender.send(message)

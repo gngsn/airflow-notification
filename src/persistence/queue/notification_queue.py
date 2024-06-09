@@ -36,11 +36,8 @@ class NotificationQueue(BaseModel):
 
     @classmethod
     def enqueue(cls, queue_checksum: str, message: dict, **kargs):
-        cls.insert(
-            checksum=queue_checksum,
-            payload=json.dumps(message),
-            **kargs
-        ).execute()
+        insert = cls.insert(checksum=queue_checksum, payload=json.dumps(message), **kargs)
+        execute = insert.execute()
 
     @classmethod
     def dequeue(cls, chunk):
@@ -48,19 +45,13 @@ class NotificationQueue(BaseModel):
 
     @classmethod
     def update_success_done(cls, id):
-        return cls.update(
-            try_account=cls.try_count + 1,
-            status=1,
-            updated_at=now()
-        ).where(cls.id == id).execute()
+        where = cls.update(try_account=cls.try_count + 1, status=1, updated_at=now()).where(cls.id == id)
+        return where.execute()
 
     @classmethod
     def update_failure_done(cls, id):
-        return cls.update(
-            try_account=cls.try_count + 1,
-            status=-1,
-            updated_at=now()
-        ).where(cls.id == id).execute()
+        where = cls.update(try_account=cls.try_count + 1, status=-1, updated_at=now()).where(cls.id == id)
+        return where.execute()
 
     @classmethod
     def get_partition_name(cls, now_date: date):

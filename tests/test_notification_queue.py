@@ -11,3 +11,7 @@ def test_create_notification_queue():
 
 def test_is_exist_partition():
     assert False
+
+
+def test_enqueue():
+    assert False

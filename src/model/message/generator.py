@@ -36,7 +36,7 @@ def run(setup=_init):
             notification_checksums = [args[key] for key in s.checksum_keys.split(",")]
 
             queue_checksum = _make_checksum(s.template_id, target_id, notification_checksums)
-            NotificationQueue.enqueue(queue_checksum, message.__dict__())
+            NotificationQueue.enqueue(queue_checksum, message)
 
 
 def _make_checksum(template_id: str, target: str, checksums: list[str]):
