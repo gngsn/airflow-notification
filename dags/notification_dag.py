@@ -42,31 +42,41 @@ def trigger():
         ],
     )
     def generate():
+        from pendulum import now
+        from src.persistence import init_pg
+        from src.persistence.queue import NotificationQueue
+
+        init_pg()
+
+        now_date = now().date()
+        NotificationQueue.create_partition_if_not_exists(now_date)
+
         from src.model.message import generator
 
         generator.run()
 
-    @task.virtualenv(
-        task_id="send",
-        system_site_packages=False,
-        python_version='3.11',
-        requirements=[
-            "peewee==3.17.0",
-            "pendulum==2.1.2",
-            "pydantic==2.6.0",
-            "psycopg2-binary",
-        ],
-    )
-    def send():
         from src.model.message import sender
         from src.persistence import init_pg
 
         init_pg()
         sender.run()
 
-    pre_setup()
+    # @task.virtualenv(
+    #     task_id="send",
+    #     system_site_packages=False,
+    #     python_version='3.11',
+    #     requirements=[
+    #         "peewee==3.17.0",
+    #         "pendulum==2.1.2",
+    #         "pydantic==2.6.0",
+    #         "psycopg2-binary",
+    #     ],
+    # )
+    # def send():
+
+    # pre_setup()
     generate()
-    send()
+    # send()
 
 
 trigger_dag = trigger()

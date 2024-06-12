@@ -1,30 +1,39 @@
 from abc import ABC
-from itertools import islice
 from typing import Iterator
 
 from src.persistence.queue import NotificationQueue
 
 
-def into_chuck(it: Iterator, n: int) -> Iterator[list]:
-    while chunk := list(islice(it, n)):
-        yield chunk
+def chunk(it: Iterator, size: int):
+    iterator = iter(it)
+    done = False
+    while not done:
+        c = []
+        for _ in range(size):
+            try:
+                c.append(next(iterator))
+            except StopIteration:
+                done = True
+                break
+        if c:
+            yield c
 
 
 def run():
-    chunk = 100
+    chunk_size = 100
     senders = [ConsoleSender()]
 
-    dequeue = NotificationQueue.dequeue(chunk)
-    for sender in senders:
-        for message in into_chuck(dequeue, chunk):
+    dequeue = NotificationQueue.dequeue(chunk_size)
+    for message in chunk(dequeue, chunk_size):
+        for sender in senders:
             code = sender.send(message)
 
-        if code == -1:
-            print("ERROR")
-        if code == 0:
-            print("Nothing happened")
-        if code == 1:
-            print("SUCCESS")
+            if code == -1:
+                print("ERROR")
+            if code == 0:
+                print("Nothing happened")
+            if code == 1:
+                print("SUCCESS")
 
 
 class Sender(ABC):
