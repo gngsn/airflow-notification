@@ -40,8 +40,8 @@ class NotificationQueue(BaseModel):
         execute = insert.execute()
 
     @classmethod
-    def dequeue(cls, chunk):
-        return cls.select().where(cls.status == 0).limit(chunk).for_update("FOR UPDATE SKIP LOCKED")
+    def dequeue(cls, offset, chunk):
+        return cls.select().where(cls.status == 0).offset(offset).limit(chunk).for_update("FOR UPDATE SKIP LOCKED")
 
     @classmethod
     def update_success_done(cls, id):

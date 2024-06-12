@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Iterator
+from typing import Iterator, Callable
 
 from src.persistence.queue import NotificationQueue
 
@@ -19,29 +19,49 @@ def chunk(it: Iterator, size: int):
             yield c
 
 
+def do_into_chunk(callback: Callable, size: int):
+    while True:
+        result = callback(size)
+
+        if result is None:
+            break
+
+
 def run():
     chunk_size = 100
     senders = [ConsoleSender()]
+    offset = 0
 
-    dequeue = NotificationQueue.dequeue(chunk_size)
-    for message in chunk(dequeue, chunk_size):
+    while True:
+        offset = offset + chunk_size + 1
+        code = send(senders, offset, chunk_size)
+
+        if code == -1:
+            print("ERROR")
+        if code == 0:
+            print("Nothing happened")
+            break
+        if code == 1:
+            print("SUCCESS")
+
+
+def send(senders, offset, limit):
+    dequeue = NotificationQueue.dequeue(offset, limit)
+    if len(dequeue) == 0:
+        return 0
+
+    for message in dequeue:
         for sender in senders:
             code = sender.send(message)
-
-            if code == -1:
-                print("ERROR")
-            if code == 0:
-                print("Nothing happened")
-            if code == 1:
-                print("SUCCESS")
+            return code
 
 
 class Sender(ABC):
-    def send(self, message) -> int:
+    async def send(self, message) -> int:
         raise NotImplementedError()
 
 
 class ConsoleSender(Sender):
-    def send(self, message) -> int:
+    async def send(self, message) -> int:
         print(message)
         return 1
