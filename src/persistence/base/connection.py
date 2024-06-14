@@ -22,3 +22,18 @@ def execute(sql):
 class BaseModel(Model):
     class Meta:
         database = database_
+
+
+class Connector:
+    host: str
+    db_name: str
+    db_schema: str
+    username: str
+    password: str
+
+    def __init__(self, host: str, db_name: str, db_schema: str, username: str, password: str):
+        self.host = host
+        self.db_name = db_name
+        self.db_schema = db_schema
+        self.username = username
+        self.password = password
