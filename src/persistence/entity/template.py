@@ -14,6 +14,10 @@ class MessageTemplate(BaseModel):
     message: str = CharField(max_length=1000)
 
     @classmethod
+    def find_one(cls, message_id: str):
+        return cls.get(cls.id == message_id)
+
+    @classmethod
     def find_all(cls):
         return cls.select()
 

@@ -3,11 +3,11 @@ from typing import Generator
 import pendulum
 from croniter import croniter
 
-from src.lib.list import match_one
 from src.lib.template import replace
 from src.model.message.message import Message
 from src.persistence import init_pg
 from src.persistence.base import execute, transactional
+from src.persistence.base.connection import Connector
 from src.persistence.entity.schema import MessageSchema
 from src.persistence.entity.template import MessageTemplate
 from src.persistence.queue.notification_queue import NotificationQueue
@@ -19,24 +19,23 @@ def _init():
 
 def run(setup=_init):
     setup()
-    message_templates = MessageTemplate.find_all()
-
     for s in MessageSchema.select_all():
-        template = match_one(message_templates, s.template_id)
+        with Connector(s.get_target_db_connection()):
+            template = MessageTemplate.find_one(s.template_id)
 
-        if not _trigger_now(s.schedule) or not template:
-            """ The notification is not scheduled now """
-            continue
+            if not _trigger_now(s.schedule) or not template:
+                """ The notification is not scheduled now """
+                continue
 
-        for args in _get_targets(s):
-            substitute = replace(template.message, args)
+            for args in _get_targets(s):
+                substitute = replace(template.message, args)
 
-            target_id = args["target"]
-            message = Message(title=template.title, body=substitute, to=target_id)
-            notification_checksums = [args[key] for key in s.checksum_keys.split(",")]
+                target_id = args["target"]
+                message = Message(title=template.title, body=substitute, to=target_id)
+                notification_checksums = [args[key] for key in s.checksum_keys.split(",")]
 
-            queue_checksum = _make_checksum(s.template_id, target_id, notification_checksums)
-            NotificationQueue.enqueue(queue_checksum, message)
+                queue_checksum = _make_checksum(s.template_id, target_id, notification_checksums)
+                NotificationQueue.enqueue(queue_checksum, message)
 
 
 def _make_checksum(template_id: str, target: str, checksums: list[str]):

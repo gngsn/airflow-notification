@@ -1,6 +1,7 @@
-from peewee import CharField, AutoField
+from peewee import CharField, AutoField, ForeignKeyField
 
 from src.persistence.base.connection import BaseModel
+from src.persistence.entity.ext_db_conn import ExternalDbConnection
 from src.persistence.entity.template import MessageTemplate
 
 
@@ -14,9 +15,17 @@ class MessageSchema(BaseModel):
     template_id: str = CharField(max_length=50)
     schedule: str = CharField(max_length=255)
     args: str = CharField(max_length=255)
-    target: str = CharField(max_length=255)
+
+    target_db: str = ForeignKeyField(ExternalDbConnection, backref='tweets')
+    target_user: str = CharField()
+    target_item: str = CharField()
+
     checksum_keys: str = CharField(max_length=255)
 
+    def get_target_db_connection(self):
+        self.get().join(ExternalDbConnection).where(ExternalDbConnection.id == self.target_db)
+
+    # Tweet.select().join(User).where(User.username == 'huey')
     @classmethod
     def select_all(cls):
         return cls.select()
@@ -29,7 +38,7 @@ if __name__ == "__main__":
 
 
     def get_targets(template):
-        cursor = execute(template.target)
+        cursor = execute(template.target_user)
         return list(to_json(cursor))
 
 

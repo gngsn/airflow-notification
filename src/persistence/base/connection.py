@@ -28,6 +28,15 @@ class Connector:
     __property__: dict
     __connection__: Database = None
 
+    def __init__(self, connection):
+        self.__property__ = {
+            'db_name': connection.database,
+            'user': connection.username,
+            'password': connection.password,
+            'host': connection.host,
+            'port': connection.port
+        }
+
     def __init__(self, host: str, db_name: str, db_port: int, username: str, password: str):
         self.__property__ = {
             'db_name': db_name,
