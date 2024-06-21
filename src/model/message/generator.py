@@ -51,7 +51,7 @@ def _get_targets(schema: MessageSchema) -> Generator:
         for row in cursor.fetchall():
             yield {column[0]: value for column, value in zip(cursor.description, row)}
 
-    cursor = execute(schema.target)
+    cursor = execute(schema.get_targets())
     return row_to_json(cursor)
 
 

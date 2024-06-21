@@ -17,29 +17,27 @@ class MessageSchema(BaseModel):
     args: str = CharField(max_length=255)
 
     target_db: str = ForeignKeyField(ExternalDbConnection, backref='tweets')
-    target_user: str = CharField()
-    target_item: str = CharField()
+    target_users: str = CharField()
+    target_items: str = CharField()
 
     checksum_keys: str = CharField(max_length=255)
 
     def get_target_db_connection(self):
         self.get().join(ExternalDbConnection).where(ExternalDbConnection.id == self.target_db)
 
-    # Tweet.select().join(User).where(User.username == 'huey')
     @classmethod
     def select_all(cls):
         return cls.select()
+
+    @classmethod
+    def get_targets(cls):
+        return execute(cls.target_users)
 
 
 if __name__ == "__main__":
     from src.persistence.base import init_pg, execute
 
     from string import Template
-
-
-    def get_targets(template):
-        cursor = execute(template.target_user)
-        return list(to_json(cursor))
 
 
     def to_json(cursor):
@@ -56,6 +54,6 @@ if __name__ == "__main__":
     )
 
     for s in MessageSchema.select_all():
-        for target in get_targets(s):
+        for target in s.get_targets():
             substitute = Template(_templates.message).substitute(**target)
             print(substitute)
