@@ -1,7 +1,7 @@
 from peewee import CharField, AutoField, ForeignKeyField
 
 from src.persistence.base.connection import BaseModel
-from src.persistence.entity.ext_db_conn import ExternalDbConnection
+from src.persistence.entity.external_connector import ExternalDbConnection
 from src.persistence.entity.template import MessageTemplate
 
 
