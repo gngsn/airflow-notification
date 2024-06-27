@@ -55,28 +55,26 @@ def trigger():
 
         generator.run()
 
+    @task.virtualenv(
+        task_id="send",
+        system_site_packages=False,
+        python_version='3.11',
+        requirements=[
+            "peewee==3.17.0",
+            "pendulum==2.1.2",
+            "pydantic==2.6.0",
+            "psycopg2-binary",
+        ],
+    )
+    def send():
         from src.model.message import sender
         from src.persistence import init_pg
 
         init_pg()
         sender.run()
 
-    # @task.virtualenv(
-    #     task_id="send",
-    #     system_site_packages=False,
-    #     python_version='3.11',
-    #     requirements=[
-    #         "peewee==3.17.0",
-    #         "pendulum==2.1.2",
-    #         "pydantic==2.6.0",
-    #         "psycopg2-binary",
-    #     ],
-    # )
-    # def send():
-
-    # pre_setup()
-    generate()
-    # send()
+    pre_setup()
+    generate() >> send()
 
 
 trigger_dag = trigger()

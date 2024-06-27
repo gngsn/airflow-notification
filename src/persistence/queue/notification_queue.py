@@ -17,7 +17,7 @@ class NotificationQueue(BaseModel):
     status: int = IntegerField(default=0, null=False)
     try_count: int = IntegerField(default=0, null=False)
     max_tries: int = IntegerField(default=3, null=False)
-    checksum: str = CharField(max_length=200)
+    key: str = CharField(max_length=200)
     payload: int = JSONField(default='{}')
 
     created_at: datetime = DateTimeField(default=now())
@@ -35,8 +35,8 @@ class NotificationQueue(BaseModel):
         table_settings = 'PARTITION BY RANGE (created_at)'
 
     @classmethod
-    def enqueue(cls, queue_checksum: str, message: dict, **kargs):
-        insert = cls.insert(checksum=queue_checksum, payload=json.dumps(message), **kargs)
+    def enqueue(cls, key: str, message: dict, **kargs):
+        insert = cls.insert(key=key, payload=json.dumps(message), **kargs)
         execute = insert.execute()
 
     @classmethod
