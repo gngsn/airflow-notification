@@ -21,6 +21,17 @@ class SingletonPrinter:
         print(f"Hi hi I'm {self.name}")
 
 
+def _process(num):
+    SingletonPrinter(f"싱글톤 테스트 {num}").print()
+
+
+def test_singleton_multiprocessing():
+    from multiprocessing import Pool
+
+    with Pool(5) as p:
+        p.map(_process, range(1, 100))
+
+
 def test_singleton():
     printers = [
         SingletonPrinter("싱글톤 테스트 1"),
