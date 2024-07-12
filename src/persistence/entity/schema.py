@@ -16,9 +16,9 @@ class MessageSchema(BaseModel):
     schedule: str = CharField(max_length=255)
     args: str = CharField(max_length=255)
 
-    target_db: str = ForeignKeyField(ExternalDbConnection, backref='tweets')
-    target_users: str = CharField()
+    target_db: str = ForeignKeyField(ExternalDbConnection)
     target_items: str = CharField()
+    target_users: str = CharField()
 
     checksum_keys: str = CharField(max_length=255)
 
