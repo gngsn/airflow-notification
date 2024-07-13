@@ -37,22 +37,13 @@ class Connector:
             'port': connection.port
         }
 
-    def __init__(self, host: str, db_name: str, db_port: int, username: str, password: str):
-        self.__property__ = {
-            'db_name': db_name,
-            'user': username,
-            'password': password,
-            'host': host,
-            'port': db_port
-        }
-
     def __enter__(self):
         self.__connection__ = PostgresqlDatabase(
             self.__property__['db_name'],
             user=self.__property__['user'],
             password=self.__property__['password'],
             host=self.__property__['host'],
-            port=self.__property__['db_port']
+            port=self.__property__['port']
         )
 
     def __exit__(self):

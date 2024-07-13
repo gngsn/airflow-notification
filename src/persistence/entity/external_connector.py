@@ -1,6 +1,7 @@
 from peewee import CharField, IntegerField
 
 from src.persistence.base.connection import BaseModel
+from src.persistence.entity.schema import MessageSchema
 
 
 class ExternalDbConnection(BaseModel):
@@ -16,6 +17,10 @@ class ExternalDbConnection(BaseModel):
     port: int = IntegerField()
     username: str = CharField(max_length=100)
     password: str = CharField(max_length=255)
+
+    @classmethod
+    def get_target_db_connection(cls, schema: MessageSchema):
+        return ExternalDbConnection.select().where(schema.target_db == ExternalDbConnection.id).get()
 
     @classmethod
     def select_all(cls):
