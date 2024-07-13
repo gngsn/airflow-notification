@@ -1,7 +1,6 @@
-from peewee import CharField, AutoField, ForeignKeyField
+from peewee import CharField, AutoField
 
 from src.persistence.base.connection import BaseModel
-from src.persistence.entity.external_connector import ExternalDbConnection
 from src.persistence.entity.template import MessageTemplate
 
 
@@ -16,14 +15,11 @@ class MessageSchema(BaseModel):
     schedule: str = CharField(max_length=255)
     args: str = CharField(max_length=255)
 
-    target_db: str = ForeignKeyField(ExternalDbConnection)
+    target_db: str = CharField()
     target_items: str = CharField()
     target_users: str = CharField()
 
     checksum_keys: str = CharField(max_length=255)
-
-    def get_target_db_connection(self):
-        self.get().join(ExternalDbConnection).where(ExternalDbConnection.id == self.target_db)
 
     @classmethod
     def select_all(cls):
