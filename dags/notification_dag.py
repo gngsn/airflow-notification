@@ -73,11 +73,13 @@ def trigger():
         init_pg()
         sender.run()
 
-    pre_setup()
+    # pre_setup()
     generate() >> send()
 
 
 trigger_dag = trigger()
 
 if __name__ == "__main__":
-    trigger_dag.test()
+    get_task = trigger_dag.get_task('generate')
+    get_task.run()
+    # trigger_dag.test()

@@ -23,6 +23,8 @@ INSERT INTO public.message_schema (id,
 VALUES (1, 'UMSV10001', '* * * * *',
         '{}',
         'AURORA_ADM',
-        'SELECT * FROM meeting WHERE now() BETWEEN start_time - INTERVAL ''30 minutes'' AND start_time + INTERVAL ''30 minutes''',
-        'SELECT u.id AS target, m.name AS meeting_name, m.end_time, (m.end_time - now())::time as remaining FROM users u join meeting m on u.id = m.host and m.start_time >= ''2024-04-09''::date and m.end_time <= ''2024-04-09''::date + interval ''5 days''',
-        '');
+        'SELECT id AS meeting_id, start_time AS start_time FROM meeting WHERE now() BETWEEN start_time - INTERVAL ''30 minutes'' AND start_time + INTERVAL ''30 minutes''',
+        'SELECT u.id AS target
+FROM users u JOIN attendee a ON u.id = a.user_id
+WHERE a.meeting_id = $meeting_id AND a.accepted = true',
+        'meeting_id,start_time');

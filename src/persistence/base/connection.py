@@ -1,4 +1,6 @@
-__all__ = ['init_pg', 'init_sqlite', 'database_', 'execute', 'BaseModel']
+__all__ = ['Connector', 'init_pg', 'init_sqlite', 'database_', 'execute', 'BaseModel']
+
+import traceback
 
 from peewee import PostgresqlDatabase, Model, SqliteDatabase, Proxy, Database
 
@@ -46,5 +48,9 @@ class Connector:
             port=self.__property__['port']
         )
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, tb):
+        """ https://docs.python.org/3/reference/datamodel.html#object.__exit__"""
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_value, tb)
+
         self.__connection__.close()

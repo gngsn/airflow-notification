@@ -15,7 +15,7 @@ class MessageTemplate(BaseModel):
 
     @classmethod
     def find_one(cls, message_id: str):
-        return cls.get(cls.id == message_id)
+        return MessageTemplate.get(MessageTemplate.id == message_id)
 
     @classmethod
     def find_all(cls):
@@ -25,3 +25,8 @@ class MessageTemplate(BaseModel):
 if __name__ == "__main__":
     init_pg()
     database_.create_tables([MessageTemplate])
+    MessageTemplate.insert(
+        id="UMSV10001",
+        title="회의 30분 전 알림",
+        message="30분 후에 $0 회의가 예정되어 있어요."
+    )

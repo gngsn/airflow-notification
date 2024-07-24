@@ -20,7 +20,7 @@ class ExternalDbConnection(BaseModel):
 
     @classmethod
     def get_target_db_connection(cls, schema: MessageSchema):
-        return ExternalDbConnection.select().where(schema.target_db == ExternalDbConnection.id).get()
+        return ExternalDbConnection.get(schema.target_db == ExternalDbConnection.id)
 
     @classmethod
     def select_all(cls):

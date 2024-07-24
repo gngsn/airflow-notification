@@ -35,9 +35,9 @@ class NotificationQueue(BaseModel):
         table_settings = 'PARTITION BY RANGE (created_at)'
 
     @classmethod
-    def enqueue(cls, key: str, message: dict, **kargs):
-        insert = cls.insert(key=key, payload=json.dumps(message), **kargs)
-        execute = insert.execute()
+    def enqueue(cls, key: str, message: dict):
+        cls.insert(key=key, payload=json.dumps(message)).execute()
+        # execute = insert
 
     @classmethod
     def dequeue(cls, offset, chunk):
