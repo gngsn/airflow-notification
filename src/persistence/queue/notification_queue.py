@@ -37,7 +37,6 @@ class NotificationQueue(BaseModel):
     @classmethod
     def enqueue(cls, key: str, message: dict):
         cls.insert(key=key, payload=json.dumps(message)).execute()
-        # execute = insert
 
     @classmethod
     def dequeue(cls, offset, chunk):
@@ -93,7 +92,6 @@ if __name__ == "__main__":
     NotificationQueue.enqueue(
         "UMSV10001:12",
         {"message": "hello world", "user_id": 12},
-        created_at=now
     )
 
     dequeue = NotificationQueue.dequeue()
