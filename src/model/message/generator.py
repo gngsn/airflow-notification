@@ -32,12 +32,15 @@ def _generate():
             template_id = schema.template_id
             template = MessageTemplate.find_one(template_id)
 
-            if not _trigger_now(schema.schedule) or not template:
+            if not template or not _trigger_now(schema.schedule):
                 """ The notification is not scheduled now """
                 continue
 
             for args in _get_targets(schema):
+                """ find target item to send notification """
+
                 for users in _get_target_users(schema, args):
+                    """ send notification to target user """
                     args = args | users
                     target_id = str(args["target"])
 
