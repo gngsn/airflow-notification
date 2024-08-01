@@ -19,7 +19,7 @@ class MessageSchema(BaseModel):
     target_items: str = CharField()
     target_users: str = CharField()
 
-    checksum_keys: str = CharField(max_length=255)
+    check_keys: str = CharField(max_length=255)
 
     @classmethod
     def select_all(cls):
@@ -27,26 +27,3 @@ class MessageSchema(BaseModel):
 
     def get_targets(self):
         return self.target_items
-
-# if __name__ == "__main__":
-#     from src.persistence.base import init_pg
-#     from string import Template
-#
-#
-#     def to_json(cursor):
-#         for row in cursor.fetchall():
-#             yield {column[0]: value for column, value in zip(cursor.description, row)}
-#
-#
-#     init_pg()
-#
-#     _templates = MessageTemplate(
-#         id="UMSV10001",
-#         title="이번 주 회의 건 수",
-#         message="이번 주 ${meeting_name} 회의가 예정되어 있어요. ${remaining} 시간 남았어요.",
-#     )
-#
-#     for s in MessageSchema.select_all():
-#         for target in s.get_targets():
-#             substitute = Template(_templates.message).substitute(**target)
-#             print(substitute)

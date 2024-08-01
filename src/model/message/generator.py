@@ -44,16 +44,22 @@ def _generate():
                     args = args | users
                     target_id = str(args["target"])
 
-                    formed = replace(template.message, args)
-                    message = Message(title=template.title, body=formed, to=target_id)
-                    notification_checksums = [args[key] for key in schema.checksum_keys.split(",")]
+                    message = _to_message(template, args, target_id)
+                    check_keys = _get_check_key(schema, args, target_id)
 
-                    queue_checksum = _make_checksum(schema.template_id, target_id, notification_checksums)
-                    NotificationQueue.enqueue(queue_checksum, message.dict())
+                    NotificationQueue.enqueue(check_keys, message.dict())
 
 
-def _make_checksum(template_id: str, target: str, checksums: list[str]):
-    return ":".join([template_id, target] + checksums)
+def _get_check_key(schema, args, target_id):
+    check_keys = [args[key] for key in schema.check_keys.split(",")]
+    unique_keys = [schema.template_id, target_id] + check_keys
+
+    return ":".join(unique_keys)
+
+
+def _to_message(template: MessageTemplate, args: dict, target_id: str) -> Message:
+    formed = replace(template.message, args)
+    return Message(title=template.title, body=formed, to=target_id)
 
 
 def row_to_json(cursor):
