@@ -1,14 +1,14 @@
 CREATE TABLE message_schema
 (
-    id            BIGSERIAL,
-    template_id   VARCHAR(50),
-    schedule      VARCHAR(100),
-    args          VARCHAR(1000),
-    target_db     VARCHAR(100),
-    target_items  TEXT,
-    target_users  TEXT,
-    checksum_keys VARCHAR(200),
-    updated_at    TIMESTAMP DEFAULT CLOCK_TIMESTAMP(),
+    id           BIGSERIAL,
+    template_id  VARCHAR(50),
+    schedule     VARCHAR(100),
+    args         VARCHAR(1000),
+    target_db    VARCHAR(100),
+    target_items TEXT,
+    target_users TEXT,
+    check_keys   VARCHAR(200),
+    updated_at   TIMESTAMP DEFAULT CLOCK_TIMESTAMP(),
     PRIMARY KEY (id)
 );
 
@@ -19,7 +19,7 @@ INSERT INTO public.message_schema (id,
                                    target_db,
                                    target_items,
                                    target_users,
-                                   checksum_keys)
+                                   check_keys)
 VALUES (1, 'UMSV10001', '* * * * *',
         '{}',
         'AURORA_ADM',
