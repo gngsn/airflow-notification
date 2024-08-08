@@ -4,10 +4,11 @@ from typing import Generator
 import pendulum
 from croniter import croniter
 
+from src.lib.persistent import row_to_json
 from src.lib.template import replace
 from src.model.message.message import Message
 from src.persistence import init_pg
-from src.persistence.base import execute, transactional
+from src.persistence.base import execute
 from src.persistence.base.connection import Connector
 from src.persistence.entity.external_connector import ExternalDbConnection
 from src.persistence.entity.schema import MessageSchema
@@ -51,8 +52,8 @@ def _generate():
 
 
 def _get_check_key(schema, args, target_id):
-    check_keys = [args[key] for key in schema.check_keys.split(",")]
-    unique_keys = [schema.template_id, target_id] + check_keys
+    keys_from_args = [args[key] for key in schema.check_keys.split(",")]
+    unique_keys = [schema.template_id, target_id] + keys_from_args
 
     return ":".join(unique_keys)
 
@@ -62,13 +63,6 @@ def _to_message(template: MessageTemplate, args: dict, target_id: str) -> Messag
     return Message(title=template.title, body=formed, to=target_id)
 
 
-def row_to_json(cursor):
-    """ Convert retrieved database rows to json """
-    for row in cursor.fetchall():
-        yield {column[0]: str(value) for column, value in zip(cursor.description, row)}
-
-
-@transactional
 def _get_targets(schema: MessageSchema) -> Generator:
     """ Get targets by executing schema's target properties which is a sql query """
 
@@ -87,7 +81,3 @@ def _get_target_users(schema: MessageSchema, args: dict) -> Generator:
 
 def _trigger_now(schedule, now=pendulum.now(tz="Asia/Seoul")) -> bool:
     return croniter.match(schedule, now)
-
-
-if __name__ == "__main__":
-    run()
