@@ -73,8 +73,7 @@ def trigger():
         init_pg()
         sender.run()
 
-    # pre_setup()
-    generate() >> send()
+    pre_setup() >> generate() >> send()
 
 
 trigger_dag = trigger()
