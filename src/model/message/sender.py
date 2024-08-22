@@ -27,9 +27,7 @@ def do_into_chunk(callback: Callable, size: int):
             break
 
 
-def run():
-    chunk_size = 100
-    senders = [ConsoleSender()]
+def run(senders=[], chunk_size=100):
     offset = 0
 
     while True:

@@ -69,9 +69,10 @@ def trigger():
     def send():
         from src.model.message import sender
         from src.persistence import init_pg
+        from src.model.message.sender import ConsoleSender
 
         init_pg()
-        sender.run()
+        sender.run([ConsoleSender()])
 
     pre_setup() >> generate() >> send()
 
@@ -79,6 +80,6 @@ def trigger():
 trigger_dag = trigger()
 
 if __name__ == "__main__":
-    get_task = trigger_dag.get_task('generate')
-    get_task.run()
-    # trigger_dag.test()
+    # get_task = trigger_dag.get_task('generate')
+    # get_task.run()
+    trigger_dag.test()
