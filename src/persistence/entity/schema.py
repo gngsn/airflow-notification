@@ -5,7 +5,7 @@ from src.persistence.base.connection import BaseModel
 
 
 class MessageSchema(BaseModel):
-    """Message schema DB Model."""
+    """ Message schema DB Model. """
 
     class Meta:
         table_name = 'message_schema'

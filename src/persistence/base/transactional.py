@@ -15,7 +15,6 @@ def transactional(func):
 
     @wraps(func)
     def wrap_func(*args, **kwargs):
-
         with database_.atomic() as transaction:
             try:
                 return func(*args, **kwargs)
