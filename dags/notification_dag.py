@@ -12,7 +12,7 @@ def trigger():
     @task.virtualenv(
         task_id="preset_db",
         system_site_packages=False,
-        python_version='3.11',
+        python_version='3.12',
         requirements=[
             "peewee==3.17.0",
             "pendulum==2.1.2",
@@ -32,13 +32,13 @@ def trigger():
     @task.virtualenv(
         task_id="generate",
         system_site_packages=False,
-        python_version='3.11',
+        python_version='3.12',
         requirements=[
             "peewee==3.17.0",
             "pendulum==2.1.2",
             "pydantic==2.6.0",
             "croniter",
-            "psycopg2-binary",
+            # "psycopg2-binary",
         ],
     )
     def generate():
@@ -58,7 +58,7 @@ def trigger():
     @task.virtualenv(
         task_id="send",
         system_site_packages=False,
-        python_version='3.11',
+        python_version='3.12',
         requirements=[
             "peewee==3.17.0",
             "pendulum==2.1.2",
