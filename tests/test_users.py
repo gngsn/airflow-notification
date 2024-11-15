@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, PositiveInt
 
 
-class UserTest(BaseModel):
+class MockUser(BaseModel):
     id: int
     name: str = "John Doe"
     signup_at: datetime | None
@@ -21,6 +21,6 @@ def test_user_creation():
         },
     }
 
-    user = User(**external_data)
+    user = MockUser(**external_data)
     print(user.id)
     print(user.model_dump())
