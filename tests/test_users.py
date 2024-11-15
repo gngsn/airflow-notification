@@ -10,7 +10,7 @@ class UserTest(BaseModel):
     tastes: dict[str, PositiveInt]
 
 
-if __name__ == "__main__":
+def test_user_creation():
     external_data = {
         "id": 123,
         "signup_at": "2019-06-01 12:22",

@@ -3,8 +3,8 @@ from unittest import TestCase
 import pendulum
 
 from src.persistence.base import transactional, init_sqlite
-from src.persistence.entity.meeting import Meeting
-from src.persistence.entity.user import User
+from tests.entity.meeting import Meeting
+from tests.entity.user import User
 
 
 class TestTransactional(TestCase):

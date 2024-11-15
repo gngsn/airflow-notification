@@ -5,7 +5,10 @@ from src.persistence.base.connection import BaseModel
 
 
 class Meeting(BaseModel):
-    """ Meeting DB Model """
+    """
+    External Data Used by the Notification System
+    : Meeting DB Model
+    """
 
     class Meta:
         table_name = 'meeting'
